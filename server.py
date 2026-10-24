@@ -1,9 +1,15 @@
 """
+server.py
+
+Author: Shurjo Majumder
+ID: 169035249
+E-mail: maju5249@mylaurier.ca
+
 TCP echo / status / file-repository server (sockets only).
 
 Wire protocol
 -------------
-Client -> server: UTF-8 text lines terminated by "\\n" (at most MAX_LINE_BYTES).
+Client -> server: UTF-8 text lines terminated by \'\\n\' (at most MAX_LINE_BYTES).
 
 Server -> client: frames.
     "<KIND> <LENGTH>\\n" followed by exactly LENGTH payload bytes, KIND in {MSG, ERR}
@@ -38,13 +44,13 @@ from datetime import datetime
 logger = logging.getLogger("server")
 
 DEFAULT_HOST = "127.0.0.1"
-DEFAULT_PORT = 12345
+DEFAULT_PORT = 5000
 MAX_CLIENTS = 3
 MAX_LINE_BYTES = 4096
 CHUNK_BYTES = 64 * 1024
 HANDSHAKE_TIMEOUT = 10.0
 ACCEPT_POLL_SECONDS = 0.2
-ACK_SUFFIX = " ACK"
+ACK_SUFFIX = "ACK"
 EXIT_COMMANDS = frozenset({"exit", "quit", "q"})
 
 REPO_DIR = pathlib.Path(__file__).resolve().parent / "content"
@@ -305,7 +311,7 @@ def respond(client: Client, user_input: str) -> Reply | None:
             return Reply(ResponseKind.MSG, "\n".join(names) if names else "(repository is empty)")
         case (ClientState.ERROR, _):
             return Reply(ResponseKind.ERR, f"File not found: {user_input}. "
-                                   f"Send a listed file name, or 'list' to list again.")
+                                   f"Send a listed file name.")
         case (ClientState.ECHO, fileName) if fileName:
             return Reply(ResponseKind.FILE, path=REPO_DIR / fileName)
         case _:
