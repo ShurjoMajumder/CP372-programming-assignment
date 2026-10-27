@@ -17,14 +17,21 @@ The overview of the server side code can be shown in the following figure.
 
 ## Life of A Client Session
 
-Here is an overview of a client session lifecycle from birth to inevitable death.
+Here is an overview of a client session lifecycle from birth to inevitable death. Each thread is
+started by the main thread, which spawns it off if the server still has room. Then, a handshake 
+is performed. This handshake merely serves the purpose of telling the client their `Client#` 
+value. From there, the client is free to either have the server ack them endlessly, or they may 
+request the server to send them the contents of whatever files are present in `content/`.
 
 ![Client Lifecycle](./assets/client_lifecycle.png)
 
-## The DFA Defining The Client's State
+Now, handling the commands does require some finesse, which is where the next section becomes 
+relevant.
 
-The following DFA is used to describe the state transitions the client object goes 
-through over the course of a session. This DFA was formally proven to be correct, 
+## The PDA Defining The Client's State
+
+The following PDA (push down automata) is used to describe the state transitions the client 
+object goes through over the course of a session. This DFA was formally proven to be correct, 
 however the proof goes beyond the requirements for this report.
 
 ![img.png](assets/client_dfa.png)
@@ -36,8 +43,9 @@ file exists in the repository. If yes, the filename is pushed onto the stack and
 server streams the file's contents, if not, an error is raised and the client must 
 try again.
 
-While the use of a stack in this case would imply that this is a PDA, which is technically 
-true, the language recognized is regular, thus we can simply use an equivalent DFA.
+While the language recognized here is technically regular, thus a DFA would have sufficed, an 
+equivalent DFA would have required 4 states (instead of just three). This would have significantly 
+complicated the code implementation by adding the necessary transitions for the 4th state.
 
 ## The Connection Table
 
