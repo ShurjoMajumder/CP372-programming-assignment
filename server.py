@@ -254,9 +254,8 @@ class ConnectionTable:
 
     def __new__(cls, max_connections: int | None = None) -> ConnectionTable:
         """
-        :param max_connections: Maximum number of simultaneously active connections. Fixed by the
-                                first construction (MAX_CLIENTS if omitted) and never modified.
-                                Later calls may omit it; passing a different value raises ValueError.
+        :param max_connections: Maximum number of simultaneously active connections. Immutable after
+                                first construction (equals MAX_CLIENTS if omitted). Later calls may omit it.
         """
         if cls._singleton is None:
             with cls._lock:
@@ -270,9 +269,6 @@ class ConnectionTable:
                     self._last_client_id = 0
                     cls._singleton = self
                     return self
-        if max_connections is not None and max_connections != cls._singleton._max_connections:
-            raise ValueError(f"ConnectionTable already created with max_connections="
-                             f"{cls._singleton._max_connections}, got {max_connections}")
         return cls._singleton
 
 
@@ -336,7 +332,7 @@ def _send_file(sock: socket.socket, path: pathlib.Path) -> int:
         while sent < size:
             chunk = f.read(min(CHUNK_BYTES, size - sent))
             if not chunk:
-                return 500  # file shrank mid-transfer; framing is broken, caller must close
+                return 500  # something went wrong
             sock.sendall(chunk)
             sent += len(chunk)
     return 200
@@ -346,8 +342,7 @@ def send_response(sock: socket.socket, reply: Reply) -> int:
     """
     Sends one reply frame.
 
-    :return: 200 on success, 404 if the file vanished before it could be opened
-             (an ERR frame was sent instead), 500 on transport/IO failure.
+    :return: 200 on success, 404 if the file was deleted/moved/etc. during opening, 500 on transport/IO failure.
     """
     try:
         if reply.kind == ResponseKind.FILE and reply.path is not None:
@@ -406,7 +401,6 @@ def client_thread_main(client: Client, sock: socket.socket) -> int:
         except OSError as exc:
             logger.info("%s connection error: %s", client.username, exc)
         finally:
-            # Recorded before the socket closes so a freed slot is visible as soon as the peer sees EOF.
             ended = table.drop_connection(client.client_id)
             logger.info("%s finished: %s", client.username, ended)
     return status
