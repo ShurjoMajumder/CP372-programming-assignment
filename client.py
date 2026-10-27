@@ -12,28 +12,25 @@ QUIT_COM = ("exit", "quit", "q")
 
 
 class Header(NamedTuple):
-    
     kind: str       # MSG, ERR or FILE
-    size: int       # how many body bytes
-    label: str      # file name 
+    size: int       # # of bytes in payload
+    label: str      # file name
 
 
-class ChatClient:
+class CliClient:
     def __init__(self, host: str, port: int):
         self.host = host
         self.port = port
         self.sock = None
-        self.rx = None                     
-        self.my_name = "???"               # the server hands us a ClientNN name
+        self.rx = None
+        self.my_name = "???"               # the server hands us a Client# name
 
-  
-
-    def Open(self) -> None:
+    def open(self) -> None:
         """Open the TCP"""
         self.sock = socket.create_connection((self.host, self.port))
         self.rx = self.sock.makefile("rb")
 
-    def Close(self) -> None:
+    def close(self) -> None:
         for thing in (self.rx, self.sock):
             if thing is not None:
                 try:
@@ -41,14 +38,11 @@ class ChatClient:
                 except OSError:
                     pass                   
 
-    def Text(self, text: str) -> None:
+    def text(self, text: str) -> None:
         """Send one line to the server"""
         self.sock.sendall(text.encode("utf-8") + b"\n")
 
-    
-
     def read_header(self) -> Header | None:
-        
         raw = self.rx.readline()
         if not raw:
             return None
@@ -57,7 +51,6 @@ class ChatClient:
         return Header(kind, int(size), tail[0] if tail else "")
 
     def read_body_text(self, size: int) -> str:
-       
         pieces = []
         missing = size
         while missing > 0:
@@ -69,7 +62,6 @@ class ChatClient:
         return b"".join(pieces).decode("utf-8", errors="replace")
 
     def s_file(self, hdr: Header) -> pathlib.Path:
-       
         S_D.mkdir(exist_ok=True)
         
         dest = S_D / pathlib.Path(hdr.label).name
@@ -83,10 +75,7 @@ class ChatClient:
                 missing -= len(piece)
         return dest
 
-    
-
     def handshake(self) -> bool:
-        
         hdr = self.read_header()
         if hdr is None:
             print("Server closed the connection right away.")
@@ -96,12 +85,11 @@ class ChatClient:
             print(f"Server said no: {text}")
             return False
         self.my_name = text
-        self.Text(self.my_name)             
+        self.text(self.my_name)
         print(f"Connected as {self.my_name}. Type 'exit' to leave.")
         return True
 
     def handle_reply(self) -> bool:
-        
         hdr = self.read_header()
         if hdr is None:
             print("Server closed the connection.")
@@ -114,17 +102,16 @@ class ChatClient:
         return True
 
     def repl(self) -> None:
-        
         while True:
             try:
                 typed = input(f"{self.my_name}> ")
-            except (EOFError, KeyboardInterrupt):   # Ctrl+D / Ctrl+C = polite exit
+            except (EOFError, KeyboardInterrupt):   # Ctrl+D / Ctrl+C to exit
                 typed = "exit"
                 print()
 
-            self.Text(typed)
+            self.text(typed)
 
-            if typed in QUIT_COM:        
+            if typed in QUIT_COM:
                 print("Bye!")
                 return
             if not self.handle_reply():
@@ -135,15 +122,15 @@ def main() -> None:
     host = sys.argv[1] if len(sys.argv) > 1 else DEF_H
     port = int(sys.argv[2]) if len(sys.argv) > 2 else DEF_P
 
-    client = ChatClient(host, port)
+    client = CliClient(host, port)
     try:
-        client.Open()
+        client.open()
         if client.handshake():
             client.repl()
     except (ConnectionError, OSError) as err:
         print(f"Connection problem: {err}")
     finally:
-        client.Close()
+        client.close()
 
 
 if __name__ == "__main__":
