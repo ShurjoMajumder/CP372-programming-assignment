@@ -2,10 +2,19 @@
 title: CP372 Programming Assignment
 author:
   - "Shurjo Majudmer (maju5249@mylaurier.ca)"
-  - "Sachin Purewall (pure1374@mylaurier.ca)"
+  - "Sachin Purewal (pure1374@mylaurier.ca)"
 date: 2026-10-26
 geometry: "margin=3cm"
 ---
+
+# Abstract
+
+This document serves as an executive summary of the code written for the CP372 Programming 
+Assignment by Shurjo Majumder and Sachin Purewal. It covers the general overviews of the server 
+and client code, as well as some of the details pertaining to each portion. At the end, we have 
+included test results demonstrating the application.
+
+The full code repository can be found here: [CLICK HERE](https://github.com/ShurjoMajumder/CP372-programming-assignment)
 
 # Server Code
 
