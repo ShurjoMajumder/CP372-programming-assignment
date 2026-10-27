@@ -13,7 +13,7 @@ geometry: "margin=3cm"
 
 The overview of the server side code can be shown in the following figure.
 
-![Startup Sequence](assets/overview.png)
+![Overview](assets/overview.png)
 
 ## Life of A Client Session
 
