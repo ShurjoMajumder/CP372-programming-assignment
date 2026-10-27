@@ -31,7 +31,7 @@ relevant.
 ## The PDA Defining The Client's State
 
 The following PDA (push down automata) is used to describe the state transitions the client 
-object goes through over the course of a session. This DFA was formally proven to be correct, 
+object goes through over the course of a session. This PDA was formally proven to be correct, 
 however the proof goes beyond the requirements for this report.
 
 ![img.png](assets/client_dfa.png)
