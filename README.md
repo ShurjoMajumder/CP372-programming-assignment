@@ -54,12 +54,13 @@ complication in its design is that a lock is required to read/modify/write it.
 
 # Client Code
 
-# General Overview
+## General Overview
 
 The client is just the file client.py using a socket module, its thing and the server owns the protocol states and the client only sends lines and displays what returns.
 
-ChatClient contains all the logic, with each methods job beinf the following:
+`CliClient` contains all the logic, with each methods job being the following:
 
+```
 open() - opens TCP connection
 close() - close reader and socket
 text() - sends newline and terminate line
@@ -69,42 +70,67 @@ s_file() - streams a file body to disk
 handshake() - recieves the assigned name and echoes said name back
 handle_reply() - read and displays replt
 repl() - this is the read,send,print loop
+```
 
-# Session steps:
+## Session steps:
 1. Connect and read name 
 2. send name back
 3. loop
 4. on exit, quit or q we send line and close
 
-# Difficulties faced
+## Difficulties faced
 1. No message boundaries in TCP, we solved with lentgh in every frame header
 2. short reads on large files
 
 
 # Test Results
 
-1. Client Server Over TCP sockets only - ![Server listening, Client01 connected](assets/1.png)
-2. Names for client - ![Client names](assets/2.png)
-3. Clients Send said names once accepted - ![Client names](assets/2.png)
-4. Client cache with time stamps - ![Echo and status](assets/4.png). ![Final cache](assets/13.png)
-5. Limit of 3 clients - ![Fourth client rejected](assets/5.png)
-6. String echo back - ![Concurrent clients](assets/3.png)
-7. Status shows cache -  ![Echo and status](assets/4.png) ![Final cache](assets/13.png)
-8. Exit closes connection - ![Client01 exits](assets/11.png)
+Figures 4 through 19 demonstrate:
+
+1. Client Server Over TCP sockets only.
+2. Names for client.
+3. Clients Send said names once accepted.
+4. Client cache with time stamps.
+5. Limit of 3 clients.
+6. String echo back.
+7. Status shows cache.
+8. Exit closes connection.
+9. List shows repo.
+10. stream a file, handle missing file.
+
+![Server listening, Client01 connected](assets/1.png)
+
+![Client names](assets/2.png)
+
+![Client names](assets/2.png)
+
+![Echo and status](assets/4.png)
+
+![Final cache](assets/13.png)
+
+![Fourth client rejected](assets/5.png)
+
+![Concurrent clients](assets/3.png)
+
+![Echo and status](assets/4.png)
+
+![Final cache](assets/13.png)
+
+![Client01 exits](assets/11.png)
+
 ![Client04 connects](assets/12.png)
 
-9. List shows repo - ![File list](assets/6.png)
+![File list](assets/6.png)
 
-10. stream a file, handle missing file - ![File received](assets/7.png)
+![File received](assets/7.png)
+
 ![File contents](assets/8.png)
-![Missing file error](assets/9.png)
-![Retry succeeds](assets/10.png)
 
+![Missing file error](assets/9.png)
+
+![Retry succeeds](assets/10.png)
 
 # Possible improvements 
 1. Client to client messaging
 2. TLS and login
-
-
-
 
