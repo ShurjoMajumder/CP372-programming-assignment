@@ -53,3 +53,58 @@ The connection table is merely a table tracking the connections to the server. T
 complication in its design is that a lock is required to read/modify/write it.
 
 # Client Code
+
+# General Overview
+
+The client is just the file client.py using a socket module, its thing and the server owns the protocol states and the client only sends lines and displays what returns.
+
+ChatClient contains all the logic, with each methods job beinf the following:
+
+open() - opens TCP connection
+close() - close reader and socket
+text() - sends newline and terminate line
+read_header() - parses first line of reply frame
+read_body_text() - reads size bytes and decodes them into text
+s_file() - streams a file body to disk
+handshake() - recieves the assigned name and echoes said name back
+handle_reply() - read and displays replt
+repl() - this is the read,send,print loop
+
+# Session steps:
+1. Connect and read name 
+2. send name back
+3. loop
+4. on exit, quit or q we send line and close
+
+# Difficulties faced
+1. No message boundaries in TCP, we solved with lentgh in every frame header
+2. short reads on large files
+
+
+# Test Results
+
+1. Client Server Over TCP sockets only - ![Server listening, Client01 connected](assets/1.png)
+2. Names for client - ![Client names](assets/2.png)
+3. Clients Send said names once accepted - ![Client names](assets/2.png)
+4. Client cache with time stamps - ![Echo and status](assets/4.png). ![Final cache](assets/13.png)
+5. Limit of 3 clients - ![Fourth client rejected](assets/5.png)
+6. String echo back - ![Concurrent clients](assets/3.png)
+7. Status shows cache -  ![Echo and status](assets/4.png) ![Final cache](assets/13.png)
+8. Exit closes connection - ![Client01 exits](assets/11.png)
+![Client04 connects](assets/12.png)
+
+9. List shows repo - ![File list](assets/6.png)
+
+10. stream a file, handle missing file - ![File received](assets/7.png)
+![File contents](assets/8.png)
+![Missing file error](assets/9.png)
+![Retry succeeds](assets/10.png)
+
+
+# Possible improvements 
+1. Client to client messaging
+2. TLS and login
+
+
+
+
