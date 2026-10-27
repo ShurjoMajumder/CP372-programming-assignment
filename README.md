@@ -34,7 +34,7 @@ The following PDA (push down automata) is used to describe the state transitions
 object goes through over the course of a session. This PDA was formally proven to be correct, 
 however the proof goes beyond the requirements for this report.
 
-![img.png](assets/client_dfa.png)
+![Client PDA](assets/client_dfa.png)
 
 Each state simply tells the relevant thread what kind of response to send, and whether 
 content from a file should be sent. In ECHO mode, the server simply echoes what the 
