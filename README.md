@@ -4,6 +4,7 @@ authors:
   - "Shurjo Majudmer (maju5249@mylaurier.ca)"
   - "Sacchin Purewall (pure1374@mylaurier.ca)"
 date: 2026-10-26
+geometry: "margin=3cm"
 ---
 
 # Server Code
